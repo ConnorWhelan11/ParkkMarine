@@ -55,7 +55,7 @@
     "react-native-table-component": "^1.2.1",
     "react-native-touchable-scale": "^2.1.0",
     "react-native-web": "^0.11.7",
-    "react-native-webview": "7.0.5",
+    "react-native-webview": "11.0.0",
     "react-navigation": "^3.12.0",
     "react-speed-dial": "^0.5.2",
     "uuid": "^3.3.3"
