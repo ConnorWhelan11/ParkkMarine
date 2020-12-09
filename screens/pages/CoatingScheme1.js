@@ -94,6 +94,23 @@ const Header10 = () => (
 @observer
 export default class CoatingScheme1 extends Component {
 
+  static navigationOptions = ({ navigation }) => {
+    const index = navigation.getParam('index', 25);
+    var title = ''
+    if(index === 10) {
+      title = 'Out Docking Coating Scheme: Diagram';
+    } else {
+      title ='In Docking Coating Scheme: Diagram';
+    }
+    return {
+        headerTitle: (
+          <View>
+            <Text style={{fontWeight: '500', fontSize: 18, lineHeight: 18}}>{title}</Text>
+          </View>
+        )
+    }
+  }
+
   constructor(props){
     super(props);
     const index = this.props.navigation.getParam('index', 1);
@@ -205,31 +222,31 @@ export default class CoatingScheme1 extends Component {
             <Select
               data={options}
               label="Subzone A"
-              selectedOption={displayTable.thrust[0]}
+              selectedOption={displayTable.forward[0]}
               onSelect={(value) => this.setItem('forward', 0, value)}
             />
             <Select
               data={options}
               label="Subzone B"
-              selectedOption={displayTable.thrust[1]}
+              selectedOption={displayTable.forward[1]}
               onSelect={(value) => this.setItem('forward', 1, value)}
             />
             <Select
               data={options}
               label="Subzone C"
-              selectedOption={displayTable.thrust[2]}
+              selectedOption={displayTable.forward[2]}
               onSelect={(value) => this.setItem('forward', 2, value)}
             />
             <Select
               data={options}
               label="Subzone D"
-              selectedOption={displayTable.thrust[3]}
+              selectedOption={displayTable.forward[3]}
               onSelect={(value) => this.setItem('forward', 3, value)}
             />
             <Select
               data={options}
               label="Subzone E"
-              selectedOption={displayTable.thrust[4]}
+              selectedOption={displayTable.forward[4]}
               onSelect={(value) => this.setItem('forward', 4, value)}
             />
           </Card>
@@ -416,15 +433,8 @@ export default class CoatingScheme1 extends Component {
           <Card header={Header10} style={{ width: wp('90%'), marginBottom: 7}}>
             <Select
               data={options}
-              label="Subzone A"
               selectedOption={displayTable.flats[0]}
               onSelect={(value) => this.setItem('flats', 0, value)}
-            />
-            <Select
-              data={options}
-              label="Subzone B"
-              selectedOption={displayTable.flats[1]}
-              onSelect={(value) => this.setItem('flats', 1, value)}
             />
           </Card>
           <View style={{height: 10, width: wp('80%')}} />
@@ -433,12 +443,6 @@ export default class CoatingScheme1 extends Component {
     )
   }
 }
-
-CoatingScheme1.navigationOptions = {
-  title: 'In Docking Coating Scheme',
-};
-
-
 
 const styles = StyleSheet.create({
   container: {

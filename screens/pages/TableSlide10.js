@@ -99,76 +99,7 @@ export default class TableSlide10 extends Component {
 
     this.state = {
       tableData: props.dryDockStore.offlineReportData.slides[9],
-      displayTable: {
-        "bulb": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "thrust": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "forward": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "shoulders": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "side1": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "side2": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "side3": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "aft": [
-          "",
-          "",
-          "",
-          "",
-          ""
-        ],
-        "stern": [
-          "",
-          "",
-          ""
-        ],
-        "flats": [
-          "",
-          ""
-        ],
-        "boot": [
-          "",
-        ]
-      },
+      displayTable: props.dryDockStore.offlineReportData.slides[9].displayTable,
     }
   }
 
@@ -207,6 +138,11 @@ export default class TableSlide10 extends Component {
     display[area][i] = item;
     table[area][i] = item.value;
     this.setState({tableData: table, displayTable: display});
+  }
+
+  componentWillUnmount(){
+    this.props.dryDockStore.offlineReportData.slides[9] = this.state.tableData;
+    this.props.dryDockStore.stringify()
   }
 
 
@@ -284,31 +220,31 @@ export default class TableSlide10 extends Component {
             <Select
               data={options}
               label="Subzone A"
-              selectedOption={displayTable.thrust[0]}
+              selectedOption={displayTable.forward[0]}
               onSelect={(value) => this.setItem('forward', 0, value)}
             />
             <Select
               data={options}
               label="Subzone B"
-              selectedOption={displayTable.thrust[1]}
+              selectedOption={displayTable.forward[1]}
               onSelect={(value) => this.setItem('forward', 1, value)}
             />
             <Select
               data={options}
               label="Subzone C"
-              selectedOption={displayTable.thrust[2]}
+              selectedOption={displayTable.forward[2]}
               onSelect={(value) => this.setItem('forward', 2, value)}
             />
             <Select
               data={options}
               label="Subzone D"
-              selectedOption={displayTable.thrust[3]}
+              selectedOption={displayTable.forward[3]}
               onSelect={(value) => this.setItem('forward', 3, value)}
             />
             <Select
               data={options}
               label="Subzone E"
-              selectedOption={displayTable.thrust[4]}
+              selectedOption={displayTable.forward[4]}
               onSelect={(value) => this.setItem('forward', 4, value)}
             />
           </Card>

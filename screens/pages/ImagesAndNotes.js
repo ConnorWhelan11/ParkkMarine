@@ -93,10 +93,21 @@ const Header10 = () => (
 @observer
 export default class ImagesAndNotes extends React.Component {
 
+  static navigationOptions = ({ navigation }) => {
+    const title = navigation.getParam('title', 'Title');
+    return {
+        headerTitle: (
+          <View>
+            <Text style={{fontWeight: '500', fontSize: 18, lineHeight: 18}}>{title}</Text>
+          </View>
+        )
+    }
+  }
+
   constructor(props){
     super(props);
     const index = props.navigation.getParam('index', 25);
-    const slideData = props.dryDockStore.offlineReportData.slides[index];
+    const slideData = props.dryDockStore.offlineReportData.customSlides[index];
     this.state = {
       images: slideData.images,
       note: slideData.note,
@@ -110,8 +121,8 @@ export default class ImagesAndNotes extends React.Component {
 
 
   componentWillUnmount(){
-    this.props.dryDockStore.offlineReportData.slides[this.state.index].images = this.state.images;
-    this.props.dryDockStore.offlineReportData.slides[this.state.index].note = this.state.note;
+    this.props.dryDockStore.offlineReportData.customSlides[this.state.index].images = this.state.images;
+    this.props.dryDockStore.offlineReportData.customSlides[this.state.index].note = this.state.note;
     this.props.dryDockStore.stringify()
   }
 
@@ -122,7 +133,11 @@ export default class ImagesAndNotes extends React.Component {
 
   async pickImage(slide) {
     await this.askPermissionsAsync();
-    const result = await ImagePicker.launchImageLibraryAsync();
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.3,
+    });
     if (result.cancelled === false) {
       const { uri } = result;
       this.upload(uri, slide);
@@ -135,21 +150,31 @@ export default class ImagesAndNotes extends React.Component {
           if(uri != null){
               const set_uri = await ImageUpload.upload(uri);
               var images = this.state.images;
-              images.push(set_uri);
+              images.push({ note: '', uri: set_uri});
               this.setState({images});
           }
       } catch (e) {
           // const message = serializeException(e);
-          console.log(e);
+          console.log('error');
           Alert.alert(e);
           this.setState({ loading: false });
       }
   }
 
-  renderImage(uri){
+  renderImage(data, i){
+    console.log('i', i)
     return (
-      <View style={{width: wp('100%') / 3, justifyContent: 'center', alignItems: 'center', marginBottom: 10}}>
-        <Image source={{uri: uri.item}} style={{width: wp('30%'), height: wp('30%')}} />
+      <View style={{width: wp('100%') / 3, justifyContent: 'center', alignItems: 'center', marginBottom: 10, flexDirection: 'column'}}>
+        <Image source={{uri: data.uri}} style={{width: wp('30%'), height: wp('30%'), marginBottom: 5}} />
+        <Input
+          placeholder='Image Label'
+          value={data.note}
+          onChangeText={(val) => {
+            const images = this.state.images;
+            images[i].note = val;
+            this.setState({images})
+          }}
+        />
       </View>
     );
   }
@@ -176,7 +201,7 @@ export default class ImagesAndNotes extends React.Component {
               />
           </Card>
           <View>
-            <FlatList data={this.state.images} extraData={this.state} renderItem={(uri) => this.renderImage(uri)} numColumns={3} />
+            <FlatList data={this.state.images} extraData={this.state} renderItem={({item, index}) => this.renderImage(item, index)} numColumns={3} />
             <View style={{justifyContent: 'center', alignItems: 'center', marginBottom: 15, marginTop: 6}}>
               <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 15}}>
                 <TouchableOpacity onPress={() => this.pickImage()}>
@@ -197,12 +222,6 @@ export default class ImagesAndNotes extends React.Component {
     )
   }
 }
-
-ImagesAndNotes.navigationOptions = {
-  title: 'Images and note',
-};
-
-
 
 const styles = StyleSheet.create({
   container: {

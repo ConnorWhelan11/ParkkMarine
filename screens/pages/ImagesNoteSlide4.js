@@ -91,19 +91,59 @@ const Header10 = () => (
 @observer
 export default class ImagesNoteSlide4 extends React.Component {
 
+  static navigationOptions = ({ navigation }) => {
+    const index = navigation.getParam('index', 25);
+    var title = ''
+    if(index === 11) {
+      title = 'Out Docking Coating Condition (Port)';
+    } else if(index === 12) {
+      title = 'Out Docking Coating Condition (Stbd)';
+    } else if(index === 3){
+      title ='In Docking Fouling Condition (Port)';
+    } else if(index === 13){
+      title ='In Docking Coating Condition (Port)';
+    } else if(index === 14) {
+      title ='In Docking Coating Condition (Stbd)';
+    }
+    return {
+        headerTitle: (
+          <View>
+            <Text style={{fontWeight: '500', fontSize: 18, lineHeight: 18}}>{title}</Text>
+          </View>
+        )
+    }
+  }
+
   constructor(props){
     super(props);
+    const index = props.navigation.getParam('index', 25);
+
+    if(index === 11) {
+      this.navigationOptions = {
+        title: 'Out Docking Coating Condition (Port)',
+      };
+    } else if(index === 12) {
+      this.navigationOptions = {
+        title: 'Out Docking Coating Condition (Stbd)',
+      };
+    } else {
+      this.navigationOptions = {
+        title: 'In Docking Fouling Condition',
+      };
+    }
+
     this.state = {
-      bulb: this.props.dryDockStore.offlineReportData.slides[3].bulb,
-      thrust: this.props.dryDockStore.offlineReportData.slides[3].thrust,
-      forward: this.props.dryDockStore.offlineReportData.slides[3].forward,
-      shoulders: this.props.dryDockStore.offlineReportData.slides[3].shoulders,
-      side1: this.props.dryDockStore.offlineReportData.slides[3].side1,
-      side2: this.props.dryDockStore.offlineReportData.slides[3].side2,
-      side3: this.props.dryDockStore.offlineReportData.slides[3].side3,
-      aft: this.props.dryDockStore.offlineReportData.slides[3].aft,
-      stern: this.props.dryDockStore.offlineReportData.slides[3].stern,
-      note: this.props.dryDockStore.offlineReportData.slides[3].note,
+      bulb: this.props.dryDockStore.offlineReportData.slides[index].bulb,
+      thrust: this.props.dryDockStore.offlineReportData.slides[index].thrust,
+      forward: this.props.dryDockStore.offlineReportData.slides[index].forward,
+      shoulders: this.props.dryDockStore.offlineReportData.slides[index].shoulders,
+      side1: this.props.dryDockStore.offlineReportData.slides[index].side1,
+      side2: this.props.dryDockStore.offlineReportData.slides[index].side2,
+      side3: this.props.dryDockStore.offlineReportData.slides[index].side3,
+      aft: this.props.dryDockStore.offlineReportData.slides[index].aft,
+      stern: this.props.dryDockStore.offlineReportData.slides[index].stern,
+      note: this.props.dryDockStore.offlineReportData.slides[index].note,
+      index
     }
   }
 
@@ -112,16 +152,16 @@ export default class ImagesNoteSlide4 extends React.Component {
   }
 
   componentWillUnmount(){
-    this.props.dryDockStore.offlineReportData.slides[3].bulb = this.state.bulb;
-    this.props.dryDockStore.offlineReportData.slides[3].thrust = this.state.thrust;
-    this.props.dryDockStore.offlineReportData.slides[3].forward = this.state.forward;
-    this.props.dryDockStore.offlineReportData.slides[3].shoulders = this.state.shoulders;
-    this.props.dryDockStore.offlineReportData.slides[3].side1 = this.state.side1;
-    this.props.dryDockStore.offlineReportData.slides[3].side2 = this.state.side2;
-    this.props.dryDockStore.offlineReportData.slides[3].side3 = this.state.side3;
-    this.props.dryDockStore.offlineReportData.slides[3].aft = this.state.aft;
-    this.props.dryDockStore.offlineReportData.slides[3].stern = this.state.stern;
-    this.props.dryDockStore.offlineReportData.slides[3].note = this.state.note;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].bulb = this.state.bulb;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].thrust = this.state.thrust;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].forward = this.state.forward;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].shoulders = this.state.shoulders;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].side1 = this.state.side1;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].side2 = this.state.side2;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].side3 = this.state.side3;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].aft = this.state.aft;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].stern = this.state.stern;
+    this.props.dryDockStore.offlineReportData.slides[this.state.index].note = this.state.note;
     this.props.dryDockStore.stringify()
   }
 
@@ -138,7 +178,11 @@ export default class ImagesNoteSlide4 extends React.Component {
   }
 
   async pickImage(shipArea) {
-    const result = await ImagePicker.launchImageLibraryAsync();
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.3,
+    });
     if (result.cancelled === false) {
       const { uri } = result;
       this.upload(uri, shipArea);
@@ -449,10 +493,6 @@ export default class ImagesNoteSlide4 extends React.Component {
     )
   }
 }
-
-ImagesNoteSlide4.navigationOptions = {
-  title: 'In Docking Fouling Condition',
-};
 
 
 

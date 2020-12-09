@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, SafeAreaView, ActivityIndicator, NetInfo, TouchableOpacity,ScrollView, Image } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ActivityIndicator, NetInfo, TouchableOpacity,ScrollView, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -16,6 +16,20 @@ import {
   SelectItem
 } from '@ui-kitten/components';
 import {inject, observer} from "mobx-react";
+import * as Permissions from 'expo-permissions';
+import ImageUpload from '../components/ImageUpload'
+
+/*
+<FloatingAction
+  actions={actions}
+  distanceToEdge={10}
+  position="right"
+  actionsPaddingTopBottom={3}
+  onPressItem={name => {
+    console.log(`selected button: ${name}`);
+  }}
+/>
+ */
 
 const actions = [
   {
@@ -66,8 +80,8 @@ const options = [
   {
     key: 'ida',
     color: 'black',
-    text: 'Ida cruises',
-    value: 'Ida cruises',
+    text: 'Aida cruises',
+    value: 'Aida cruises',
   },
   {
     key: 'costa',
@@ -84,8 +98,14 @@ const options = [
   {
     key: 'az',
     color: 'black',
-    text: 'Azmara Cruises',
-    value: 'Azmara Cruises',
+    text: 'Azamara Cruises',
+    value: 'Azamara Cruises',
+  },
+  {
+    key: 'ncl',
+    color: 'black',
+    text: 'Norwegian Cruise Line',
+    value: 'Norwegian Cruise Line',
   },
 ];
 
@@ -97,6 +117,8 @@ export default class ReportDetails extends React.Component {
     this.state = {
       user: null,
       company: this.props.dryDockStore.offlineReportData.company,
+      start: this.props.dryDockStore.offlineReportData.start,
+      end: this.props.dryDockStore.offlineReportData.end,
       shipName: this.props.dryDockStore.offlineReportData.shipName,
       reportType: '',
       port: this.props.dryDockStore.offlineReportData.port,
@@ -107,20 +129,60 @@ export default class ReportDetails extends React.Component {
     }
   }
 
+  async pickImage() {
+    await this.askPermissionsAsync();
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.3,
+    });
+    if (result.cancelled === false) {
+      const { uri } = result;
+      this.upload(uri);
+    }
+  }
 
-  async pickCoverImage(slide) {
-    const result = await ImagePicker.launchImageLibraryAsync();
+  async upload(uri) {
+      this.setState({ loading: true });
+      try {
+          if(uri != null){
+              const set_uri = await ImageUpload.upload(uri);
+              this.setState({cover: set_uri});
+          }
+      } catch (e) {
+          Alert.alert(JSON.stringify(e));
+          console.log(e)
+          this.setState({ loading: false });
+      }
+  }
+
+  askPermissionsAsync = async () => {
+    await Permissions.askAsync(Permissions.CAMERA);
+    await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  };
+
+
+  async pickCoverImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.3,
+    });
     const { uri } = result;
     this.setState({cover: uri})
   }
 
   async pickLogo(slide) {
-    const result = await ImagePicker.launchImageLibraryAsync();
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.3,
+    });
     const { uri } = result;
     this.setState({logo: uri});
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.saveReport();
   }
 
@@ -130,7 +192,7 @@ export default class ReportDetails extends React.Component {
       return (
         <View style={{justifyContent: 'center', alignItems: 'center', marginBottom: 15, marginTop: 6}}>
           <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 15}}>
-            <TouchableOpacity onPress={() => this.pickCoverImage()}>
+            <TouchableOpacity onPress={() => this.pickImage()}>
               <View style={{marginHorizontal: 20}}>
                 <Ionicons name={'ios-image'} size={50} style={{marginBottom: 15}}/>
               </View>
@@ -146,7 +208,7 @@ export default class ReportDetails extends React.Component {
       )
     } else {
       return (
-        <TouchableOpacity onPress={() => this.pickCoverImage()}>
+        <TouchableOpacity onPress={() => this.pickImage()}>
           <View style={{justifyContent: 'center', alignItems: 'center', marginBottom: 15}}>
             <Image source={{uri: cover}} style={{width: wp('30%'), height: wp('30%')}} />
           </View>
@@ -184,6 +246,8 @@ export default class ReportDetails extends React.Component {
     this.props.dryDockStore.offlineReportData.cityCountry = this.state.country;
     this.props.dryDockStore.offlineReportData.slides[0].preparedFor = this.state.preparedFor;
     this.props.dryDockStore.offlineReportData.company = this.state.company;
+    this.props.dryDockStore.offlineReportData.start = this.state.start;
+    this.props.dryDockStore.offlineReportData.end = this.state.end;
     this.props.dryDockStore.stringify();
   }
 
@@ -228,15 +292,6 @@ export default class ReportDetails extends React.Component {
   render(){
     return(
       <ScrollView containerStyle={styles.root} style={styles.root}>
-        <FloatingAction
-          actions={actions}
-          distanceToEdge={10}
-          position="right"
-          actionsPaddingTopBottom={3}
-          onPressItem={name => {
-            console.log(`selected button: ${name}`);
-          }}
-        />
         {this._renderCover()}
         <Select
           data={options}
@@ -263,12 +318,28 @@ export default class ReportDetails extends React.Component {
           value={this.state.country}
           onChangeText={(val) => this.setState({country: val})}
         />
+        <Input
+          label='Start'
+          placeholder='Date'
+          value={this.state.start}
+          onChangeText={(val) => this.setState({start: val})}
+        />
+        <Input
+          label='End'
+          placeholder='Date'
+          value={this.state.end}
+          onChangeText={(val) => this.setState({end: val})}
+        />
         {this._renderPreparedFor()}
       </ScrollView>
     )
   }
 
 }
+
+ReportDetails.navigationOptions = {
+  title: 'Report Details',
+};
 
 
 const styles = StyleSheet.create({

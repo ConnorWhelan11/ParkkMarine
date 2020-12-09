@@ -4,7 +4,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   FlatList
@@ -14,8 +13,18 @@ import { MonoText } from '../components/StyledText';
 import {inject, observer} from "mobx-react";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
-import { ListItem } from 'react-native-elements'
+import { ListItem, CheckBox } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  Button,
+  Card,
+  CardHeader,
+  Text,
+  Modal,
+  Layout,
+  Input
+} from '@ui-kitten/components';
 
 
 @inject('dryDockStore', 'userStore')
@@ -59,14 +68,14 @@ export default class TableOfContentScreen extends React.Component {
           name: 'In Docking Port Fouling Condition',
           avatar: require('../assets/images/page4.png'),
           subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4'),
+          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4' , { index: 3}),
         },
         {
           id: '6',
           name: 'In Docking Starboard Fouling Condition',
           avatar: require('../assets/images/page4.png'),
           subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesNoteSlide5'),
+          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4', { index: 4}),
         },
         {
           id: '7',
@@ -79,15 +88,15 @@ export default class TableOfContentScreen extends React.Component {
           id: '8',
           name: 'In Docking Coating Condition Summary',
           avatar: require('../assets/images/page3.png'),
-          subtitle: 'Vertical sides, flats',
-          onPress: () => this.props.navigation.navigate('TextSlide7'),
+          subtitle: 'Page 1',
+          onPress: () => this.props.navigation.navigate('TextSlide3', { index: 6}),
         },
         {
           id: '9',
           name: 'In Docking Coating Condition Summary',
           avatar: require('../assets/images/page3.png'),
-          subtitle: 'Niche ares',
-          onPress: () => this.props.navigation.navigate('TextSlide8'),
+          subtitle: 'Page 2',
+          onPress: () => this.props.navigation.navigate('TextSlide3', { index: 7}),
         },
         {
           id: '10',
@@ -105,234 +114,131 @@ export default class TableOfContentScreen extends React.Component {
         },
         {
           id: '12',
+          name: 'In Docking Port Coating Condition',
+          avatar: require('../assets/images/page4.png'),
+          subtitle: 'Images and note',
+          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4' , { index: 13}),
+        },
+        {
+          id: '13',
+          name: 'In Docking Stbd Coating Condition',
+          avatar: require('../assets/images/page4.png'),
+          subtitle: 'Images and note',
+          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4' , { index: 14}),
+        },
+        {
+          id: '14',
           name: 'Out Docking Coating Scheme: Key',
           avatar: require('../assets/images/page2.png'),
           subtitle: 'Coating color, type, and location',
           onPress: () => this.props.navigation.navigate('CoatingKey1', {index: 10}),
         },
         {
-          id: '13',
+          id: '15',
           name: 'Out Docking Coating Scheme: Diagram',
           avatar: require('../assets/images/page2.png'),
           subtitle: 'Select cooating of each ship section',
           onPress: () => this.props.navigation.navigate('CoatingScheme1', {index: 10}),
         },
         {
-          id: '14',
-          name: 'Out Docking Port Coating Scheme',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4'),
-        },
-        {
-          id: '15',
-          name: 'Out Docking Starboard Coating',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesNoteSlide5'),
-        },
-        {
           id: '16',
-          name: 'Summary of Drag Penalty',
-          avatar: require('../assets/images/page22.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('DragPenalty'),
+          name: 'Out Docking Port Coating Condition',
+          avatar: require('../assets/images/page4.png'),
+          subtitle: 'Images and note',
+          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4', { index: 11}),
         },
         {
           id: '17',
-          name: 'Bulbous Bow Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '18',
-          name: 'Bow Thrusters Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },{
-          id: '19',
-          name: 'Forward Sides Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '20',
-          name: 'Shoulders Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '21',
-          name: 'Side 1 Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '22',
-          name: 'Side 2 Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '23',
-          name: 'Side 3 Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '24',
-          name: 'Aft Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '25',
-          name: 'Stern Fouling Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '26',
-          name: 'Flats Condition Analysis',
-          avatar: require('../assets/images/page23.png'),
-          subtitle: 'Table to input drag penalty values',
-          onPress: () => this.props.navigation.navigate('BulbFoulingTable'),
-        },
-        {
-          id: '27',
-          name: 'Niche Areas – Sea Chests - Fouling Condition Analysis',
+          name: 'Out Docking Stbd Coating Condtion',
           avatar: require('../assets/images/page4.png'),
           subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 25}),
-        },
-        {
-          id: '28',
-          name: 'Niche Areas – Crossovers Tunnels - Fouling Condition Analysis',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 26}),
-        },
-        {
-          id: '29',
-          name: 'Niche Areas – Stabilizers - Fouling Condition Analysis',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 27}),
-        },
-        {
-          id: '30',
-          name: 'Niche Areas – Bow Thrusters - Fouling Condition Analysis',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 28}),
-        },
-        {
-          id: '31',
-          name: 'Niche Areas – Azipods/ Stern - Fouling Condition Analysis',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 29}),
-        },
-        {
-          id: '32',
-          name: 'Coating Condition Summary – In docking Port/ Stbd Side',
-          avatar: require('../assets/images/page3.png'),
-          subtitle: 'Text sections with bullet points',
-          onPress: () => this.props.navigation.navigate('TextSlide3', { index: 30 }),
-        },
-        {
-          id: '33',
-          name: 'Coating Condition Analysis – No HP Washing – Port Side',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 31}),
-        },
-        {
-          id: '34',
-          name: 'Coating Condition Analysis – No HP Washing – Stbd Side',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 32}),
-        },
-        {
-          id: '35',
-          name: 'Coating Condition Analysis – No HP Washing – Flats',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 33}),
-        },
-        {
-          id: '36',
-          name: 'Coating Condition Analysis – No HP Washing – Flats',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 34}),
-        },
-        {
-          id: '37',
-          name: 'Coating Condition Analysis – Niche Areas',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 35}),
-        },
-        {
-          id: '38',
-          name: 'Observations – Underwater Cleaning Brush Marks',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 36}),
-        },
-        {
-          id: '39',
-          name: 'Observations – Delamination and Cracking',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 37}),
-        },
-        {
-          id: '40',
-          name: 'Observations – Anchor & Chain',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 38}),
-        },
-        {
-          id: '41',
-          name: 'Quality Control – Slurry Blast Residue',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 29}),
-        },
-        {
-          id: '42',
-          name: 'Quality Control – Substrate Chloride Level',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 40}),
-        },
-        {
-          id: '43',
-          name: 'Quality Control – Coating Application',
-          avatar: require('../assets/images/page4.png'),
-          subtitle: 'Images and note',
-          onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: 41}),
+          onPress: () => this.props.navigation.navigate('ImagesNoteSlide4', { index: 12}),
         },
       ],
+      visible: false,
+      title: '',
+      extraList: this.generateList(),
+      customSlides: this.props.dryDockStore.offlineReportData.customSlides
     }
   }
 
+  componentWillUnmount(){
+    this.props.dryDockStore.offlineReportData.customSlides = this.state.customSlides;
+  }
+
+  generateList(){
+    const id  = uuidv4();
+    console.log(this.props.dryDockStore.offlineReportData.customSlides)
+    return this.props.dryDockStore.offlineReportData.customSlides.map((slide, i) => {
+      return {
+        id: id,
+        name: slide.title,
+        avatar: require('../assets/images/page1.png'),
+        subtitle: 'Images and description',
+        checked: slide.checked,
+        onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: i, title: slide.title}),
+      }
+    })
+  }
+
+  addSlide(){
+    this.setState({visible: true});
+  }
+
+  createSlide(){
+    const list = this.state.extraList;
+    const customSlides = this.state.customSlides;
+    const id  = uuidv4();
+
+    customSlides.push({
+      title: this.state.title,
+      note: '',
+      checked: true,
+      images: []
+    });
+
+    this.props.dryDockStore.offlineReportData.customSlides = customSlides;
+
+    list.push({
+      id: id,
+      name: this.state.title,
+      avatar: require('../assets/images/page1.png'),
+      subtitle: 'Images and description',
+      checked: true,
+      onPress: () => this.props.navigation.navigate('ImagesAndNotes', {index: customSlides.length - 1, title: this.state.title}),
+    });
+
+    this.setState({
+      visible: false,
+      title: '',
+      extraList: list
+    });
+  }
+
+
+
+  renderModalElement = () => (
+    <Layout
+      level='3'
+      style={styles.modalContainer}>
+      <Input
+        label='Slide Title'
+        placeholder='Start typing...'
+        value={this.state.title}
+        onChangeText={(e) => this.setState({title: e})}
+      />
+      <Button
+        size='small'
+        style={{marginTop: 10}}
+        onPress={() => this.createSlide()}>
+        ADD SLIDE
+      </Button>
+    </Layout>
+  );
+
   render(){
     return (
-      <View>
+      <ScrollView>
         <FlatList
           data={this.state.list}
           renderItem={({ item }) => (
@@ -352,7 +258,48 @@ export default class TableOfContentScreen extends React.Component {
           )}
           keyExtractor={item => item.id}
         />
-      </View>
+        <View style={{width: wp('100%'), height: 50, justifyContent: 'center', alignItems: 'center', marginBottom: 10, marginTop: 10}}>
+            <Button
+              size='small'
+              onPress={() => this.addSlide()}>
+              ADD SLIDE
+            </Button>
+        </View>
+        <FlatList
+          data={this.state.extraList}
+          extraData={this.state}
+          renderItem={({ item, index }) => (
+            <ListItem
+              key={item.id}
+              Component={TouchableScale}
+              leftAvatar={{ source: item.avatar }}
+              title={item.name}
+              subtitle={item.subtitle}
+              onPress={() => item.onPress()}
+              checkmark={this.state.extraList[index].checked}
+              onLongPress={() => {
+                const extraList = this.state.extraList;
+                const customSlides = this.state.customSlides;
+
+                extraList[index].checked = !extraList[index].checked;
+                customSlides[index].checked = !customSlides[index].checked;
+
+                this.setState({extraList, customSlides});
+              }}
+              bottomDivider
+              friction={90}
+              tension={100}
+              chevron={{ color: 'black' }}
+            />
+          )}
+          keyExtractor={item => item.id}
+        />
+        <Modal
+          visible={this.state.visible}
+          backdropStyle={styles.backdrop}>
+          {this.renderModalElement()}
+        </Modal>
+      </ScrollView>
     );
   }
 }
@@ -364,5 +311,16 @@ TableOfContentScreen.navigationOptions = {
 
 
 const styles = StyleSheet.create({
-
+  modalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    width: wp('80%'),
+    height: wp('80%'),
+    paddingHorizontal: 5,
+    borderRadius: 5
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 });

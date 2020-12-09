@@ -139,7 +139,11 @@ export default class ImagesNoteSlide5 extends React.Component {
   }
 
   async pickImage(shipArea) {
-    const result = await ImagePicker.launchImageLibraryAsync();
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.3,
+    });
     if (result.cancelled === false) {
       const { uri } = result;
       this.upload(uri, shipArea);

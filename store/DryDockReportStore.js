@@ -137,13 +137,15 @@ export default class DryDockReportStore {
   }
 
   async generateReport(email){
+    var data = JSON.parse(JSON.stringify(this._offlineReportData));
+    data.customSlides = data.customSlides.filter(slide => slide.checked);
     const bodyReq = JSON.stringify({
-      data: this._offlineReportData,
+      data,
       email
     });
 
     try {
-      const res = await fetch('http://ec2-13-58-174-91.us-east-2.compute.amazonaws.com:3000/generateReport', {
+      const res = await fetch('http://ec2-18-222-72-169.us-east-2.compute.amazonaws.com:3000/generateReport', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

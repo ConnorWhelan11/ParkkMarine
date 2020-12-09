@@ -3,8 +3,10 @@ import {
   Image,
   Platform,
   ScrollView,
+  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  KeyboardAvoidingView,
   View,
   ProgressBarAndroid,
   ActivityIndicator
@@ -22,6 +24,7 @@ import {
 
 import { Input } from '@ui-kitten/components';
 import autobind from 'autobind-decorator'
+import {actions, defaultActions, RichEditor, RichToolbar} from 'react-native-pell-rich-editor';
 
 
 @inject('userStore', 'inspectionStore', 'dryDockStore')
@@ -46,142 +49,31 @@ export default class TextSlide3 extends React.Component {
     this.props.dryDockStore.stringify();
   }
 
-  footer(index){
-    return () => (
-      <View>
-        {this.renderList(index)}
-        <View style={styles.footerContainer}>
-          <Button
-            style={styles.footerControl}
-            onPress={() => this.removeBulletRow(index)}
-            size='small'>
-            REMOVE
-          </Button>
-          <Button
-            style={styles.footerControl}
-            size='small'
-            onPress={() => this.addBulletRow(index)}
-            status='basic'>
-            ADD
-          </Button>
-        </View>
-      </View>
-    );
+  onEditorInitialized(){
+    console.log('editor is a go');
   }
 
-  header(index){
-    return () => (
-      <View style={{paddingVertical: 3, paddingHorizontal: 5}}>
-        <Input
-          label='Title'
-          placeholder='Example: Flats, Niche Areas'
-          value={this.state.sections[index].title}
-          onChangeText={(e) => this.setTitle(index, e)}
-        />
-      </View>
-    );
-  }
-
-  addBulletRow(index){
-    var sections = this.state.sections;
-    sections[index].list.push('');
-    this.setState({sections});
-  }
-
-  removeBulletRow(index){
-    var sections = this.state.sections;
-    sections[index].list.splice(-1,1);
-    this.setState({sections});
-  }
-
-  setBulletItem(value, i, sectionIndex){
-    var sections = this.state.sections;
-    sections[sectionIndex].list[i] = value;
-    this.setState({sections});
-  }
-
-  setCoat(index, value){
-    var sections = this.state.sections;
-    sections[index].coat = value;
-    this.setState({sections});
-  }
-
-  setTitle(index, value){
-    var sections = this.state.sections;
-    sections[index].title = value;
-    this.setState({sections});
-  }
-
-  addSection(index, value){
-    var sections = this.state.sections;
-    sections.push({
-      "type": "",
-      "list": [
-        "",
-      ],
-      "title": "",
-    })
-    this.setState({sections});
-  }
-
-  removeSection(index, value){
-    var sections = this.state.sections;
-    sections.splice(-1,-1);
-    this.setState({sections});
-  }
-
-  renderList(index){
-    return this.state.sections[index].list.map((item, i) => {
-      return (
-        <Input
-          placeholder='Bullet point'
-          value={item}
-          onChangeText={(e) => this.setBulletItem(e, i, index)}
-        />
-      )
-    })
-  }
-
-  renderSection(section, index){
-    return (
-      <Card header={this.header(index)} footer={this.footer(index)} style={{ width: wp('90%'), marginBottom: 7}}>
-        <Input
-          label='Coating'
-          placeholder='Example: Jotun SPC'
-          value={section.coat}
-          onChangeText={(e) => this.setCoat(index, e)}
-        />
-      </Card>
-    )
+  onChange(data) {
+    this.setState({sections: data});
   }
 
 
   render(){
 
     return (
-      <View style={styles.container}>
-        <ScrollView>
-          {
-            this.state.sections.map((section, i) => this.renderSection(section, i))
-          }
-          <View style={[styles.footerContainer, {marginTop: 7, paddingHorizontal: 5}]}>
-            <Button
-              style={styles.footerControl}
-              onPress={() => this.removeSection()}
-              size='small'>
-              REMOVE
-            </Button>
-            <Button
-              style={styles.footerControl}
-              size='small'
-              onPress={() => this.addSection()}
-              status='basic'>
-              ADD
-            </Button>
-          </View>
-          <View style={{height: 250, width: wp('80%')}} />
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scroll}>
+          <RichEditor
+            ref={(r) => this.richtext = r}
+            onChange={data => this.onChange(data)}
+            initialContentHTML={this.state.sections}
+            editorInitializedCallback={() => this.onEditorInitialized()}
+          />
         </ScrollView>
-      </View>
+        <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={0} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <RichToolbar getEditor={() => this.richtext}/>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     )
   }
 }
@@ -194,10 +86,11 @@ TextSlide3.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 10,
-    alignItems: 'center',
+      flex: 1,
+      backgroundColor: '#F5FCFF',
+  },
+  scroll: {
+      backgroundColor: '#ffffff',
   },
   indicator: {
       alignItems: "center",

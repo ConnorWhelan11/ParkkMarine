@@ -20,11 +20,30 @@ import Swiper from 'react-native-swiper';
 import { Table, TableWrapper, Row, Cell } from 'react-native-table-component';
 import ColorPickerModal from '../../components/ColorPickerModal';
 import TableTextModal from '../../components/TableTextModal';
+import MultiselectModal from '../../components/MultiselectModal';
+
 
 
 @inject('dryDockStore', 'userStore')
 @observer
 export default class CoatingKey1 extends Component {
+
+  static navigationOptions = ({ navigation }) => {
+    const index = navigation.getParam('index', 25);
+    var title = ''
+    if(index === 10) {
+      title = 'Out Docking Coating Scheme: Key';
+    } else {
+      title ='In Docking Coating Scheme: Key';
+    }
+    return {
+        headerTitle: (
+          <View>
+            <Text style={{fontWeight: '500', fontSize: 18, lineHeight: 18}}>{title}</Text>
+          </View>
+        )
+    }
+  }
 
   constructor(props){
     super(props);
@@ -49,6 +68,10 @@ export default class CoatingKey1 extends Component {
 
   _toggleTextModal(text, row, col) {
     this._textModal.toggleModal(text, row, col);
+  }
+
+  _toggleLocationModal(text, row, col) {
+    this._selectModal.toggleModal(text, row, col);
   }
 
   addCoatingTableRow(){
@@ -78,6 +101,16 @@ export default class CoatingKey1 extends Component {
     )
   }
 
+  _renderLocationCol(text, row, col){
+    return(
+      <TouchableOpacity onPress={() => this._toggleLocationModal(text, row, col)}>
+        <View>
+          <Text style={styles.p} numberOfLines={1}>{text}</Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
 
   render() {
     const state = this.state;
@@ -89,7 +122,7 @@ export default class CoatingKey1 extends Component {
               this.props.dryDockStore.offlineReportData.slides[this.state.index].colors.map((rowData, index) => (
                 <TableWrapper key={index} style={styles.row}>
                   <Cell data={this._renderColorCol(rowData.code, index)} textStyle={styles.p}/>
-                  <Cell data={this._renderTextCol(rowData.location, index, 'location')} textStyle={styles.p}/>
+                  <Cell data={this._renderLocationCol(rowData.location, index, 'location')} textStyle={styles.p}/>
                   <Cell data={this._renderTextCol(rowData.type, index, 'type')} textStyle={styles.p}/>
                   <Cell data={this._renderTextCol(rowData.name, index, 'name')} textStyle={styles.p}/>
                 </TableWrapper>
@@ -118,14 +151,14 @@ export default class CoatingKey1 extends Component {
           <TableTextModal ref={component => this._textModal = component} setText={(text, row, col) => {
             this.props.dryDockStore.offlineReportData.slides[this.state.index].colors[row][col] = text;
           }}/>
+          <MultiselectModal ref={component => this._selectModal = component} onSelect={(text, row, col) => {
+            this.props.dryDockStore.offlineReportData.slides[this.state.index].colors[row][col] = text;
+          }}/>
         </View>
     )
   }
 }
 
-CoatingKey1.navigationOptions = {
-  title: 'In Docking Coating Key',
-};
 
 
 
